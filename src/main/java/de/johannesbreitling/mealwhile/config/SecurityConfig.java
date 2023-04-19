@@ -21,7 +21,6 @@ public class SecurityConfig {
     private final AuthenticationProvider authenticationProvider;
 
     @Bean
-    @Order(2)
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf()
@@ -41,22 +40,5 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-
-/*
-    @Bean
-    @Order(1)
-    public SecurityFilterChain adminFilterChain(HttpSecurity http) throws Exception {
-        http
-            .csrf()
-            .disable()
-            .securityMatcher("/api/v1/admin/**")
-            .authorizeHttpRequests(authorize -> authorize.anyRequest().hasRole("ADMIN"))
-            .authenticationProvider(authenticationProvider)
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-        return http.build();
-
-    }
- */
-
 
 }
