@@ -5,10 +5,12 @@ import de.johannesbreitling.mealwhile.business.model.user.Role;
 import de.johannesbreitling.mealwhile.business.model.user.User;
 import de.johannesbreitling.mealwhile.business.model.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -19,7 +21,8 @@ public class AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authManager;
 
-    public AuthResponse register(RegisterRequest request) {
+    public IAuthResponse register(RegisterRequest request) {
+
         User user = User
                 .builder()
                 .username(request.getUsername())
@@ -40,7 +43,8 @@ public class AuthService {
                 .build();
     }
 
-    public AuthResponse authenticate(AuthRequest request) {
+    public IAuthResponse authenticate(AuthRequest request) {
+
         authManager.authenticate(
             new UsernamePasswordAuthenticationToken(
                 request.getUsername(),

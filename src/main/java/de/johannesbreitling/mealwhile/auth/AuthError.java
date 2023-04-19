@@ -9,8 +9,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthResponse implements IAuthResponse {
-
-    private String token;
-
+public class AuthError implements IAuthResponse {
+    private String error;
 }
