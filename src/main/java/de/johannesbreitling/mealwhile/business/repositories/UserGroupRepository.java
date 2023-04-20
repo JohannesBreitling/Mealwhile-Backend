@@ -11,5 +11,6 @@ import java.util.Optional;
 public interface UserGroupRepository extends JpaRepository<UserGroup, String> {
 
     Optional<UserGroup> findGroupByName(String name);
+    Optional<UserGroup> findGroupById(String id);
 
 }

@@ -1,11 +1,9 @@
 package de.johannesbreitling.mealwhile.auth;
 
-import de.johannesbreitling.mealwhile.business.model.user.UserGroup;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.lang.NonNull;
 
 @Data
 @Builder
@@ -21,6 +19,6 @@ public class RegisterRequest {
 
     private String lastname;
 
-    // TODO implement user group
-    //private String userGroupId;
+    private String userGroupId;
+
 }

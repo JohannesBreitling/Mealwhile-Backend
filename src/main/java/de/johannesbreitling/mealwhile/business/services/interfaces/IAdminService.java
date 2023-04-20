@@ -7,6 +7,9 @@ import org.springframework.stereotype.Component;
 @Component
 public interface IAdminService {
 
+    // Methods regarding the user groups
     UserGroup createUserGroup(UserGroupRequest request);
+    UserGroup updateUserGroup(String id, UserGroupRequest request);
+    UserGroup deleteUserGroup(String id);
 
 }

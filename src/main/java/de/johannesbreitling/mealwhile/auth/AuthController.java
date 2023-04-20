@@ -1,5 +1,6 @@
 package de.johannesbreitling.mealwhile.auth;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,7 @@ public class AuthController {
                 || request.getFirstname() == null
                 || request.getLastname() == null
                 || request.getPassword() == null
+                || request.getUserGroupId() == null
         ) {
 
             return ResponseEntity
@@ -32,7 +34,11 @@ public class AuthController {
                     .body(new AuthError("Missing arguments to register."));
         }
 
-        return ResponseEntity.ok(service.register(request));
+        try {
+            return ResponseEntity.ok(service.register(request));
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new AuthError("The provided user group does not exist!"));
+        }
     }
 
     @PostMapping("/authenticate")

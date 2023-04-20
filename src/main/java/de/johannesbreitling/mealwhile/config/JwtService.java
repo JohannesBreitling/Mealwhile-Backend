@@ -20,8 +20,8 @@ public class JwtService {
     // old version, key in plain code
     //private final String SECRET_KEY = "2F413F442A472D4B6150645367566B59703373367639792442264529482B4D6251655468576D5A7134743777217A25432A462D4A614E635266556A586E327235";
 
-    // Expiration in 5 Minutes
-    private final int EXPIRATION_DURATION = 5 * 60 * 1000;
+    // Expiration in 24 hours
+    private final int EXPIRATION_DURATION = 24 * 60 * 60 * 1000;
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);

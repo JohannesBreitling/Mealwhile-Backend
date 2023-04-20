@@ -1,3 +1,5 @@
 package de.johannesbreitling.mealwhile.business.model.responses.admin;
 
-public record UserGroupResponse(String id) implements ApiResponse { }
+import de.johannesbreitling.mealwhile.business.model.responses.IApiResponse;
+
+public record UserGroupResponse(String id) implements IApiResponse { }

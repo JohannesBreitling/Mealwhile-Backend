@@ -35,9 +35,8 @@ public class User implements UserDetails {
 
     private String password;
 
-    // TODO Implement user group
-    //@ManyToOne
-    //private UserGroup group;
+    @ManyToOne
+    private UserGroup group;
 
     @Enumerated(EnumType.STRING)
     private Role role;

@@ -1,27 +1,35 @@
 package de.johannesbreitling.mealwhile.auth;
 
+import de.johannesbreitling.mealwhile.business.model.exceptions.EntityNotFoundException;
+import de.johannesbreitling.mealwhile.business.repositories.UserGroupRepository;
 import de.johannesbreitling.mealwhile.config.JwtService;
 import de.johannesbreitling.mealwhile.business.model.user.Role;
 import de.johannesbreitling.mealwhile.business.model.user.User;
 import de.johannesbreitling.mealwhile.business.model.user.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final UserRepository repository;
+    private final UserRepository userRepository;
+    private final UserGroupRepository userGroupRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authManager;
 
     public IAuthResponse register(RegisterRequest request) {
+
+        // Try to get the user group from the repository
+        var userGroup = userGroupRepository.findGroupById(request.getUserGroupId());
+
+        if (userGroup.isEmpty()) {
+            throw new EntityNotFoundException();
+        }
 
         User user = User
                 .builder()
@@ -29,11 +37,11 @@ public class AuthService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .firstname(request.getFirstname())
                 .lastname(request.getLastname())
-                //.group()
+                .group(userGroup.get())
                 .role(Role.USER)
                 .build();
 
-        repository.save(user);
+        userRepository.save(user);
 
         var jwtToken = jwtService.generateToken(user);
 
@@ -53,7 +61,7 @@ public class AuthService {
         );
 
         // User is now authenticated
-        var user = repository
+        var user = userRepository
                 .findUserByUsername(request.getUsername())
                 // TODO throw an appropriate exception
                 .orElseThrow();
