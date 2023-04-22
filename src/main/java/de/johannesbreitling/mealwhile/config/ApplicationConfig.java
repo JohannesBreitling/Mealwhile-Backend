@@ -1,6 +1,6 @@
 package de.johannesbreitling.mealwhile.config;
 
-import de.johannesbreitling.mealwhile.business.model.user.UserRepository;
+import de.johannesbreitling.mealwhile.business.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

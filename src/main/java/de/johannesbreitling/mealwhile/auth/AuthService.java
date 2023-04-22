@@ -5,7 +5,7 @@ import de.johannesbreitling.mealwhile.business.repositories.UserGroupRepository;
 import de.johannesbreitling.mealwhile.config.JwtService;
 import de.johannesbreitling.mealwhile.business.model.user.Role;
 import de.johannesbreitling.mealwhile.business.model.user.User;
-import de.johannesbreitling.mealwhile.business.model.user.UserRepository;
+import de.johannesbreitling.mealwhile.business.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

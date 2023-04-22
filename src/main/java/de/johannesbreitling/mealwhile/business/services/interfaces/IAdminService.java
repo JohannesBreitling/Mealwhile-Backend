@@ -1,15 +1,26 @@
 package de.johannesbreitling.mealwhile.business.services.interfaces;
 
 import de.johannesbreitling.mealwhile.business.model.requests.admin.UserGroupRequest;
+import de.johannesbreitling.mealwhile.business.model.requests.admin.UserRequest;
+import de.johannesbreitling.mealwhile.business.model.user.User;
 import de.johannesbreitling.mealwhile.business.model.user.UserGroup;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public interface IAdminService {
 
     // Methods regarding the user groups
+    List<UserGroup> getAllUserGroups();
     UserGroup createUserGroup(UserGroupRequest request);
     UserGroup updateUserGroup(String id, UserGroupRequest request);
     UserGroup deleteUserGroup(String id);
+
+    // Methods regarding the users
+    List<User> getAllUsers();
+    List<User> getUsersByGroup(String groupId);
+    User updateUser(String id, UserRequest request);
+    User deleteUser(String id);
 
 }

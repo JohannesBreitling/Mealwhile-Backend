@@ -4,12 +4,10 @@ import de.johannesbreitling.mealwhile.business.model.responses.IApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
-public class UserGroupResponse implements IApiResponse {
-
-    private final String id;
-    private final String name;
-    private final String color;
-
+public class UserGroupCollectionResponse implements IApiResponse {
+    private final List<UserGroupResponse> groups;
 }

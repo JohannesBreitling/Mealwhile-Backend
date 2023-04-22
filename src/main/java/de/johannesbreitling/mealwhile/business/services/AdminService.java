@@ -4,11 +4,13 @@ import de.johannesbreitling.mealwhile.business.model.exceptions.EntityAlreadyExi
 import de.johannesbreitling.mealwhile.business.model.exceptions.EntityNotFoundException;
 import de.johannesbreitling.mealwhile.business.model.exceptions.UserGroupNotEmptyException;
 import de.johannesbreitling.mealwhile.business.model.requests.admin.UserGroupRequest;
+import de.johannesbreitling.mealwhile.business.model.requests.admin.UserRequest;
 import de.johannesbreitling.mealwhile.business.model.user.User;
 import de.johannesbreitling.mealwhile.business.model.user.UserGroup;
-import de.johannesbreitling.mealwhile.business.model.user.UserRepository;
+import de.johannesbreitling.mealwhile.business.repositories.UserRepository;
 import de.johannesbreitling.mealwhile.business.repositories.UserGroupRepository;
 import de.johannesbreitling.mealwhile.business.services.interfaces.IAdminService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,9 +21,17 @@ public class AdminService implements IAdminService {
     private final UserGroupRepository userGroupRepository;
     private final UserRepository userRepository;
 
-    public AdminService(UserGroupRepository userGroupRepository, UserRepository userRepository) {
+    private final PasswordEncoder passwordEncoder;
+
+    public AdminService(UserGroupRepository userGroupRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userGroupRepository = userGroupRepository;
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    @Override
+    public List<UserGroup> getAllUserGroups() {
+        return userGroupRepository.findAll();
     }
 
     @Override
@@ -87,6 +97,89 @@ public class AdminService implements IAdminService {
         userGroupRepository.delete(foundGroup);
 
         return foundGroup;
+    }
+
+    @Override
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+
+    @Override
+    public List<User> getUsersByGroup(String groupId) {
+        var foundGroup = userGroupRepository.findGroupById(groupId);
+        if (groupId == null) {
+            throw new EntityNotFoundException();
+        }
+
+        var group = foundGroup.get();
+        var users = userRepository.findUsersByGroup(group);
+
+        return users.isPresent() ? users.get() : null;
+    }
+
+    @Override
+    public User updateUser(String id, UserRequest request) {
+
+        var foundUser = userRepository.findUserById(id);
+
+        if (foundUser.isEmpty()) {
+            throw new EntityNotFoundException("user");
+        }
+
+        var user = foundUser.get();
+
+        if (request.getUsername() != null) {
+            // Make sure the username is unique
+            var existingUser = userRepository.findUserByUsername(request.getUsername());
+
+            if (existingUser.isPresent()) {
+                throw new EntityAlreadyExistsException();
+            }
+
+            user.setUsername(request.getUsername());
+        }
+
+        if (request.getFirstname() != null) {
+            user.setFirstname(request.getFirstname());
+        }
+
+        if (request.getLastname() != null) {
+            user.setLastname(request.getLastname());
+        }
+
+        if (request.getPassword() != null) {
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+        }
+
+        if (request.getGroupId() != null) {
+            // Get the requested group
+            var foundGroup = userGroupRepository.findGroupById(request.getGroupId());
+
+            if (foundGroup.isEmpty()) {
+                throw new EntityNotFoundException("user group");
+            }
+
+            user.setGroup(foundGroup.get());
+        }
+
+        userRepository.save(user);
+
+        return user;
+    }
+
+    @Override
+    public User deleteUser(String id) {
+
+        var foundUser = userRepository.findUserById(id);
+
+        if (foundUser.isEmpty()) {
+            throw new EntityNotFoundException();
+        }
+
+        User user = foundUser.get();
+        userRepository.delete(user);
+
+        return user;
     }
 
 }

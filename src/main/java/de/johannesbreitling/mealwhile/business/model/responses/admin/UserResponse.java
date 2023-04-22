@@ -6,10 +6,10 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class UserGroupResponse implements IApiResponse {
+public class UserResponse implements IApiResponse {
 
-    private final String id;
-    private final String name;
-    private final String color;
+    private final String userId;
+    private final String username;
+    private final UserGroupResponse userGroup;
 
 }
