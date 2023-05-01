@@ -59,7 +59,7 @@ public class AdminService implements IAdminService {
         var group = userGroupRepository.findGroupById(id);
 
         if (group.isEmpty()) {
-            throw new EntityNotFoundException();
+            throw new EntityNotFoundException("User group with the given id does not exist.");
         }
 
         UserGroup foundGroup = group.get();
@@ -84,7 +84,7 @@ public class AdminService implements IAdminService {
         var group = userGroupRepository.findGroupById(id);
 
         if (group.isEmpty()) {
-            throw new EntityNotFoundException();
+            throw new EntityNotFoundException("User group with the given id does not exist.");
         }
 
         UserGroup foundGroup = group.get();
@@ -107,8 +107,8 @@ public class AdminService implements IAdminService {
     @Override
     public List<User> getUsersByGroup(String groupId) {
         var foundGroup = userGroupRepository.findGroupById(groupId);
-        if (groupId == null) {
-            throw new EntityNotFoundException();
+        if (foundGroup.isEmpty()) {
+            throw new EntityNotFoundException("User group with the given id doest not exist.");
         }
 
         var group = foundGroup.get();
@@ -123,7 +123,7 @@ public class AdminService implements IAdminService {
         var foundUser = userRepository.findUserById(id);
 
         if (foundUser.isEmpty()) {
-            throw new EntityNotFoundException("user");
+            throw new EntityNotFoundException("User with the given id does not exist.");
         }
 
         var user = foundUser.get();
@@ -156,7 +156,7 @@ public class AdminService implements IAdminService {
             var foundGroup = userGroupRepository.findGroupById(request.getGroupId());
 
             if (foundGroup.isEmpty()) {
-                throw new EntityNotFoundException("user group");
+                throw new EntityNotFoundException("User group with the given id does not exist.");
             }
 
             user.setGroup(foundGroup.get());
@@ -173,7 +173,7 @@ public class AdminService implements IAdminService {
         var foundUser = userRepository.findUserById(id);
 
         if (foundUser.isEmpty()) {
-            throw new EntityNotFoundException();
+            throw new EntityNotFoundException("User with the given id doest not exist.");
         }
 
         User user = foundUser.get();

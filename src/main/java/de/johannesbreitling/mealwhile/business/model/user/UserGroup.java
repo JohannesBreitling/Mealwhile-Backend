@@ -1,5 +1,6 @@
 package de.johannesbreitling.mealwhile.business.model.user;
 
+import de.johannesbreitling.mealwhile.business.model.generator.MealwhileIdGenerator;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,7 +17,10 @@ import org.hibernate.annotations.GenericGenerator;
 public class UserGroup {
 
     @Id
-    @GenericGenerator(name = "group_id", strategy = "de.johannesbreitling.mealwhile.business.model.generator.MealwhileIdGenerator")
+    @GenericGenerator(
+            name = "group_id",
+            strategy = "de.johannesbreitling.mealwhile.business.model.generator.MealwhileIdGenerator"
+    )
     @GeneratedValue(generator = "group_id")
     private String id;
 

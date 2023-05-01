@@ -4,17 +4,17 @@ package de.johannesbreitling.mealwhile.business.model.exceptions;
  * Exception when a given Entity is not found in the repository
  */
 public class EntityNotFoundException extends RuntimeException {
-    private final String entity;
 
-    public EntityNotFoundException() {
-        entity = null;
+    private static final String PREFIX = "Error, Entity not found: ";
+
+    private final String message;
+
+    public EntityNotFoundException(String message) {
+        super();
+        this.message = message;
     }
 
-    public EntityNotFoundException(String entity) {
-        this.entity = entity;
-    }
-
-    public String getEntity() {
-        return entity;
+    public String getMessage() {
+        return message;
     }
 }

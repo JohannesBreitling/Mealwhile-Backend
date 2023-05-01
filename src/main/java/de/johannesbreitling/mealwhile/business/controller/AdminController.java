@@ -1,7 +1,6 @@
 package de.johannesbreitling.mealwhile.business.controller;
 
 import de.johannesbreitling.mealwhile.business.model.exceptions.EntityAlreadyExistsException;
-import de.johannesbreitling.mealwhile.business.model.exceptions.EntityNotFoundException;
 import de.johannesbreitling.mealwhile.business.model.exceptions.UserGroupNotEmptyException;
 import de.johannesbreitling.mealwhile.business.model.requests.admin.UserGroupRequest;
 import de.johannesbreitling.mealwhile.business.model.requests.admin.UserRequest;
@@ -87,10 +86,6 @@ public class AdminController {
         try {
             UserGroup updatedGroup = adminService.updateUserGroup(groupId, request);
             return ResponseEntity.ok(new EntityResponse(updatedGroup.getId()));
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(new ApiError("404", "User group not found."));
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -112,8 +107,6 @@ public class AdminController {
         try {
             UserGroup updatedGroup = adminService.deleteUserGroup(groupId);
             return ResponseEntity.ok(new EntityResponse(updatedGroup.getId()));
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiError("404", "User group not found."));
         } catch (UserGroupNotEmptyException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiError("400", "User group is not empty."));
         } catch (Exception e) {
@@ -132,18 +125,31 @@ public class AdminController {
             return ResponseEntity.ok(new UserCollectionResponse(new ArrayList<>()));
         }
 
-        var response = new UserCollectionResponse(
-            users
-                    .stream()
-                    .map(user -> new UserResponse(
-                            user.getId(),
-                            user.getUsername(),
-                            new UserGroupResponse(user.getGroup().getId(), user.getGroup().getName(), user.getGroup().getColor())
-                    ))
-                    .collect(Collectors.toList())
-        );
+        var response = new UserCollectionResponse(users);
 
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/users/{groupId}")
+    public ResponseEntity<IApiResponse> getUsersByGroup(
+            @PathVariable String groupId
+    ) {
+        if (groupId == null) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiError("400", "No valid group id provided."));
+        }
+
+        try {
+            var users = adminService.getUsersByGroup(groupId);
+            return ResponseEntity.ok(new UserCollectionResponse(users));
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiError("500", "Something went wrong."));
+        }
+
+
     }
 
     @PatchMapping("/user/{userId}")
@@ -170,10 +176,6 @@ public class AdminController {
         try {
             var updatedUser = adminService.updateUser(userId, request);
             return ResponseEntity.ok(new EntityResponse(updatedUser.getId()));
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(new ApiError("404", "The given " + e.getEntity() + " was not found."));
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -193,10 +195,6 @@ public class AdminController {
         try {
             var deletedUser = adminService.deleteUser(userId);
             return ResponseEntity.ok(new EntityResponse(deletedUser.getId()));
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(new ApiError("404", "The given user was not found."));
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)

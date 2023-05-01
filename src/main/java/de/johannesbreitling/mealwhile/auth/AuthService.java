@@ -28,7 +28,7 @@ public class AuthService {
         var userGroup = userGroupRepository.findGroupById(request.getUserGroupId());
 
         if (userGroup.isEmpty()) {
-            throw new EntityNotFoundException();
+            throw new EntityNotFoundException("User group with given id does not exist.");
         }
 
         User user = User
