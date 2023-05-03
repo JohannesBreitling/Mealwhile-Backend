@@ -2,9 +2,9 @@ package de.johannesbreitling.mealwhile.business.controller;
 
 import de.johannesbreitling.mealwhile.business.model.exceptions.BadRequestException;
 import de.johannesbreitling.mealwhile.business.model.requests.grocery.GroceryFlagRequest;
-import de.johannesbreitling.mealwhile.business.model.responses.IdOnlyResonse;
+import de.johannesbreitling.mealwhile.business.model.responses.query.QueryMode;
+import de.johannesbreitling.mealwhile.business.model.responses.query.SuccessfulQueryResponse;
 import de.johannesbreitling.mealwhile.business.model.responses.grocery.GroceryFlagResponse;
-import de.johannesbreitling.mealwhile.business.model.responses.grocery.GroceryResponse;
 import de.johannesbreitling.mealwhile.business.services.GroceryService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,11 +22,6 @@ public class GroceryController {
         this.groceryService = groceryService;
     }
 
-    @GetMapping("/flagss")
-    public ResponseEntity<String> test() {
-        return ResponseEntity.ok("HALLO!");
-    }
-
     @GetMapping("/flags")
     public ResponseEntity<List<GroceryFlagResponse>> getAllGroceryFlags() {
         var flags = groceryService.getAllGroceryFlags();
@@ -40,18 +35,19 @@ public class GroceryController {
     }
 
     @PostMapping("/flags")
-    public ResponseEntity<GroceryFlagResponse> createGroceryFlag(@RequestBody GroceryFlagRequest request) {
+    public ResponseEntity<SuccessfulQueryResponse> createGroceryFlag(@RequestBody GroceryFlagRequest request) {
         if (request.getName() == null || request.getColor() == null) {
             throw new BadRequestException("Provide a name and a color for the grocery flag.");
         }
 
         var groceryFlag = groceryService.createGroceryFlag(request);
+        var response = new SuccessfulQueryResponse("GroceryFlag", groceryFlag.getId(), QueryMode.CREATE);
 
-        return ResponseEntity.ok(new GroceryFlagResponse(groceryFlag.getName(), groceryFlag.getColor()));
+        return ResponseEntity.ok(response);
     }
 
     @PatchMapping("/flags/{id}")
-    public ResponseEntity<IdOnlyResonse> updateGroceryFlag(
+    public ResponseEntity<SuccessfulQueryResponse> updateGroceryFlag(
             @PathVariable String id,
             @RequestBody GroceryFlagRequest request
             ) {
@@ -64,18 +60,22 @@ public class GroceryController {
         }
 
         var flag = groceryService.updateGroceryFlag(id, request);
-        return ResponseEntity.ok(new IdOnlyResonse(flag.getId()));
+        var response = new SuccessfulQueryResponse("GroceryFlag", flag.getId(), QueryMode.UPDATE);
+
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/flags/{id}")
-    public ResponseEntity<IdOnlyResonse> updateGroceryFlag(@PathVariable String id) {
+    public ResponseEntity<SuccessfulQueryResponse> updateGroceryFlag(@PathVariable String id) {
 
         if (id == null) {
             throw new BadRequestException("Provide a id for the grocery flag you want to delete.");
         }
 
         var flag = groceryService.deleteGroceryFlag(id);
-        return ResponseEntity.ok(new IdOnlyResonse(flag.getId()));
+        var response = new SuccessfulQueryResponse("GroceryFlag", flag.getName(), QueryMode.DELETE);
+
+        return ResponseEntity.ok(response);
     }
 
 }
