@@ -41,7 +41,7 @@ public class AdminService implements IAdminService {
         var foundGroup = userGroupRepository.findGroupByName(request.getName());
 
         if (foundGroup.isPresent()) {
-            throw new EntityAlreadyExistsException();
+            throw new EntityAlreadyExistsException("UserGroup " + request.getName());
         }
 
         // Group does not exist
@@ -133,7 +133,7 @@ public class AdminService implements IAdminService {
             var existingUser = userRepository.findUserByUsername(request.getUsername());
 
             if (existingUser.isPresent()) {
-                throw new EntityAlreadyExistsException();
+                throw new EntityAlreadyExistsException("User " + request.getUsername());
             }
 
             user.setUsername(request.getUsername());

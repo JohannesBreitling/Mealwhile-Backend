@@ -2,6 +2,8 @@ package de.johannesbreitling.mealwhile.business.controller;
 
 import de.johannesbreitling.mealwhile.business.model.exceptions.BadRequestException;
 import de.johannesbreitling.mealwhile.business.model.requests.grocery.GroceryFlagRequest;
+import de.johannesbreitling.mealwhile.business.model.requests.grocery.GroceryRequest;
+import de.johannesbreitling.mealwhile.business.model.responses.grocery.GroceryResponse;
 import de.johannesbreitling.mealwhile.business.model.responses.query.QueryMode;
 import de.johannesbreitling.mealwhile.business.model.responses.query.SuccessfulQueryResponse;
 import de.johannesbreitling.mealwhile.business.model.responses.grocery.GroceryFlagResponse;
@@ -29,7 +31,7 @@ public class GroceryController {
                 flags
                 .stream()
                 .map(
-                     flag -> new GroceryFlagResponse(flag.getName(), flag.getColor())
+                     flag -> new GroceryFlagResponse(flag.getId(), flag.getName(), flag.getColor())
                 ).collect(Collectors.toList())
         );
     }
@@ -66,8 +68,7 @@ public class GroceryController {
     }
 
     @DeleteMapping("/flags/{id}")
-    public ResponseEntity<SuccessfulQueryResponse> updateGroceryFlag(@PathVariable String id) {
-
+    public ResponseEntity<SuccessfulQueryResponse> deleteGroceryFlag(@PathVariable String id) {
         if (id == null) {
             throw new BadRequestException("Provide a id for the grocery flag you want to delete.");
         }
@@ -77,5 +78,44 @@ public class GroceryController {
 
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("")
+    public List<GroceryResponse> getAllGroceries() {
+
+        var groceries = groceryService.getAllGroceries();
+
+        return groceries
+                .stream()
+                .map(grocery -> GroceryResponse
+                        .builder()
+                        .name(grocery.getName())
+                        .id(grocery.getId())
+                        .flags(
+                                grocery
+                                        .getFlags()
+                                        .stream()
+                                        .map(flag -> GroceryFlagResponse
+                                                .builder()
+                                                .color(flag.getColor())
+                                                .name(flag.getName())
+                                                .id(flag.getId())
+                                                .build())
+                                        .collect(Collectors.toList())
+                        )
+                        .defaultUnit(grocery.getUnit().toString())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    @PostMapping("")
+    public SuccessfulQueryResponse createGrocery(@RequestBody GroceryRequest request) {
+        if (request.getName() == null && request.getUnit() == null) {
+            throw new BadRequestException("Provide a name and a unit for the grocery.");
+        }
+
+        var grocery = groceryService.createGrocery(request);
+        return new SuccessfulQueryResponse("Grocery", grocery.getId(), QueryMode.CREATE);
+    }
+
 
 }

@@ -15,6 +15,6 @@ public class EntityNotFoundException extends RuntimeException {
     }
 
     public String getMessage() {
-        return message;
+        return PREFIX + message;
     }
 }

@@ -1,17 +1,17 @@
 package de.johannesbreitling.mealwhile.business.model.grocery;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
+import java.util.List;
 
-//@Entity
-//@Table(name = "groceries")
+@Entity
+@Table(name = "groceries")
+@Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,9 +22,13 @@ public class Grocery {
     @GeneratedValue(generator = "grocery_id")
     private String id;
 
+    @Column(unique = true)
     private String name;
 
-    //private List<GroceryFlag> flags;
+    @Enumerated(EnumType.STRING)
+    private GroceryUnit unit;
 
+    @ManyToMany
+    private List<GroceryFlag> flags;
 
 }

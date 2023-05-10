@@ -1,6 +1,7 @@
 package de.johannesbreitling.mealwhile.business.controller;
 
 import de.johannesbreitling.mealwhile.business.model.exceptions.BadRequestException;
+import de.johannesbreitling.mealwhile.business.model.exceptions.EntityAlreadyExistsException;
 import de.johannesbreitling.mealwhile.business.model.exceptions.EntityNotFoundException;
 import de.johannesbreitling.mealwhile.business.model.responses.ApiError;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,13 @@ public class CustomExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new ApiError("400", e.getMessage()));
+    }
+
+    @ExceptionHandler(value = EntityAlreadyExistsException.class)
+    public ResponseEntity<ApiError> handleEntityAlreadyExists(EntityAlreadyExistsException e) {
+        return ResponseEntity
+                .status(HttpStatus.METHOD_NOT_ALLOWED)
+                .body(new ApiError("405", e.getMessage()));
     }
 
 }
