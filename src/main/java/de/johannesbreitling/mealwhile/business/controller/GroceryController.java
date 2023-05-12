@@ -1,6 +1,7 @@
 package de.johannesbreitling.mealwhile.business.controller;
 
 import de.johannesbreitling.mealwhile.business.model.exceptions.BadRequestException;
+import de.johannesbreitling.mealwhile.business.model.grocery.Grocery;
 import de.johannesbreitling.mealwhile.business.model.requests.grocery.GroceryFlagRequest;
 import de.johannesbreitling.mealwhile.business.model.requests.grocery.GroceryRequest;
 import de.johannesbreitling.mealwhile.business.model.responses.grocery.GroceryResponse;
@@ -74,7 +75,7 @@ public class GroceryController {
         }
 
         var flag = groceryService.deleteGroceryFlag(id);
-        var response = new SuccessfulQueryResponse("GroceryFlag", flag.getName(), QueryMode.DELETE);
+        var response = new SuccessfulQueryResponse("GroceryFlag", flag.getId(), QueryMode.DELETE);
 
         return ResponseEntity.ok(response);
     }
@@ -117,5 +118,33 @@ public class GroceryController {
         return new SuccessfulQueryResponse("Grocery", grocery.getId(), QueryMode.CREATE);
     }
 
+    @PatchMapping("/{id}")
+    public SuccessfulQueryResponse updateGrocery(
+            @PathVariable String id,
+            @RequestBody GroceryRequest request
+    ) {
+        if (id == null) {
+            throw new BadRequestException("Provide a valid id for the grocery you want to update.");
+        }
+
+        if (request.getName() == null && request.getFlags() == null && request.getUnit() == null) {
+            throw new BadRequestException("Arguments for updating a Grocery can't be empty.");
+        }
+
+        var grocery = groceryService.updateGrocery(id, request);
+
+        return new SuccessfulQueryResponse("Grocery", grocery.getId(), QueryMode.UPDATE);
+    }
+
+    @DeleteMapping("/{id}")
+    public SuccessfulQueryResponse deleteGrocery(@PathVariable String id) {
+        if (id == null) {
+            throw new BadRequestException("Provide a valid id for the grocery you want to update.");
+        }
+
+        var grocery = groceryService.deleteGrocery(id);
+
+        return new SuccessfulQueryResponse("Grocery", grocery.getId(), QueryMode.DELETE);
+    }
 
 }
