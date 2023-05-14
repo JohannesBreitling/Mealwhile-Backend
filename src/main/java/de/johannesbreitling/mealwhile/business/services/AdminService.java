@@ -100,6 +100,17 @@ public class AdminService implements IAdminService {
     }
 
     @Override
+    public UserGroup getUserGroupByUsername(String name) {
+        var user = userRepository.findUserByUsername(name);
+
+        if (user.isEmpty()) {
+            throw new EntityNotFoundException("User with the name " + name);
+        }
+
+        return user.get().getGroup();
+    }
+
+    @Override
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }

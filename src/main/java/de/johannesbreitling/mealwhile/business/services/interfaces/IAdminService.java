@@ -20,6 +20,7 @@ public interface IAdminService {
     // Methods regarding the users
     List<User> getAllUsers();
     List<User> getUsersByGroup(String groupId);
+    UserGroup getUserGroupByUsername(String name);
     User updateUser(String id, UserRequest request);
     User deleteUser(String id);
 

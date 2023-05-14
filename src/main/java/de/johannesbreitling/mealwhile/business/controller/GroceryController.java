@@ -132,7 +132,6 @@ public class GroceryController {
         }
 
         var grocery = groceryService.updateGrocery(id, request);
-
         return new SuccessfulQueryResponse("Grocery", grocery.getId(), QueryMode.UPDATE);
     }
 
@@ -143,7 +142,6 @@ public class GroceryController {
         }
 
         var grocery = groceryService.deleteGrocery(id);
-
         return new SuccessfulQueryResponse("Grocery", grocery.getId(), QueryMode.DELETE);
     }
 
