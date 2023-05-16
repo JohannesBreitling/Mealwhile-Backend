@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface IRecipeService {
 
-    //List<Recipe> getAllRecipesByGroup(String groupId);
+    List<Recipe> getAllRecipesByGroup(String groupId);
     Recipe createRecipe(RecipeRequest request);
     //Recipe updateRecipe(String id, RecipeRequest request);
     //Recipe deleteRecipe(String id);

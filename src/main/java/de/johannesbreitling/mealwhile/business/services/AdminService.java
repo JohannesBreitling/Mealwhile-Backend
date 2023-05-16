@@ -34,6 +34,15 @@ public class AdminService implements IAdminService {
         return userGroupRepository.findAll();
     }
 
+    public UserGroup getGroupById(String id) {
+        var group = userGroupRepository.findGroupById(id);
+        if (group.isEmpty()) {
+            throw new EntityNotFoundException("User group with id " + id);
+        }
+
+        return group.get();
+    }
+
     @Override
     public UserGroup createUserGroup(UserGroupRequest request) {
 

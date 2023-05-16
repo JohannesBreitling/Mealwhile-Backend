@@ -13,6 +13,7 @@ public interface IAdminService {
 
     // Methods regarding the user groups
     List<UserGroup> getAllUserGroups();
+    UserGroup getGroupById(String id);
     UserGroup createUserGroup(UserGroupRequest request);
     UserGroup updateUserGroup(String id, UserGroupRequest request);
     UserGroup deleteUserGroup(String id);

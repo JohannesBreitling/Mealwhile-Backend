@@ -1,6 +1,7 @@
 package de.johannesbreitling.mealwhile.business.model.grocery;
 
 
+import de.johannesbreitling.mealwhile.business.model.responses.grocery.GroceryFlagResponse;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -22,4 +23,14 @@ public class GroceryFlag {
     private String name;
 
     private String color;
+
+    public GroceryFlagResponse toResponse() {
+        return GroceryFlagResponse
+                .builder()
+                .id(id)
+                .name(name)
+                .color(color)
+                .build();
+    }
+
 }

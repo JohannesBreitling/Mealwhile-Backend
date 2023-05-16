@@ -1,6 +1,7 @@
 package de.johannesbreitling.mealwhile.business.model.recipe;
 
 import de.johannesbreitling.mealwhile.business.model.grocery.Grocery;
+import de.johannesbreitling.mealwhile.business.model.responses.recipe.IngredientResponse;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
@@ -17,5 +18,13 @@ public class Ingredient {
     private Grocery grocery;
 
     private float quantity;
+
+    public IngredientResponse toResponse() {
+        return IngredientResponse
+                .builder()
+                .grocery(grocery.toResponse())
+                .quantity(quantity)
+                .build();
+    }
 
 }

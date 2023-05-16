@@ -1,5 +1,6 @@
 package de.johannesbreitling.mealwhile.business.model.recipe;
 
+import de.johannesbreitling.mealwhile.business.model.responses.recipe.RecipeResponse;
 import de.johannesbreitling.mealwhile.business.model.user.UserGroup;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "recipes")
@@ -34,5 +36,22 @@ public class Recipe {
 
     @ElementCollection
     private List<Ingredient> ingredients;
+
+    public RecipeResponse toResponse() {
+
+        var convertedIngredients = ingredients
+                .stream()
+                .map(ingredient -> ingredient.toResponse())
+                .toList();
+
+        return RecipeResponse
+                .builder()
+                .id(id)
+                .description(description)
+                .info(info)
+                .name(name)
+                .ingredients(convertedIngredients)
+                .build();
+    }
 
 }

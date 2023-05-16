@@ -51,6 +51,18 @@ public class RecipeService implements IRecipeService {
     }
 
     @Override
+    public List<Recipe> getAllRecipesByGroup(String groupId) {
+        var group = userService.getGroupById(groupId);
+
+        var recipes = recipeRepository.findRecipesByAccessGroup(group);
+        if (recipes.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        return recipes.get();
+    }
+
+    @Override
     public Recipe createRecipe(RecipeRequest request) {
 
         var username = getUsernameFromToken();

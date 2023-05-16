@@ -1,5 +1,6 @@
 package de.johannesbreitling.mealwhile.business.model.grocery;
 
+import de.johannesbreitling.mealwhile.business.model.responses.grocery.GroceryResponse;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "groceries")
@@ -30,5 +32,22 @@ public class Grocery {
 
     @ManyToMany
     private List<GroceryFlag> flags;
+
+    public GroceryResponse toResponse() {
+
+        var convertedFlags = flags
+                .stream()
+                .map(
+                        flag -> flag.toResponse()
+                )
+                .toList();
+
+        return GroceryResponse
+                .builder()
+                .id(id)
+                .defaultUnit(unit.toString())
+                .flags(convertedFlags)
+                .build();
+    }
 
 }
