@@ -35,7 +35,7 @@ public class RecipeController {
         return ResponseEntity.ok(new SuccessfulQueryResponse("Recipe", recipe.getId(), QueryMode.CREATE));
     }
 
-    @GetMapping("/{groupId}")
+    @GetMapping("/group/{groupId}")
     public List<RecipeResponse> getRecipesByAccessGroup(@PathVariable String groupId) {
         if (groupId == null) {
             throw new BadRequestException("GroupId can not be null");
@@ -47,6 +47,16 @@ public class RecipeController {
                 .map(
                         recipe -> recipe.toResponse()
                 ).toList();
+    }
+
+    @DeleteMapping("/{recipeId}")
+    public RecipeResponse deleteRecipe(@PathVariable String recipeId) {
+        if (recipeId == null) {
+            throw new BadRequestException("Provide a id for the recipe you want to delete.");
+        }
+
+        var deletedRecipe = recipeService.deleteRecipe(recipeId);
+        return deletedRecipe.toResponse();
     }
 
 }

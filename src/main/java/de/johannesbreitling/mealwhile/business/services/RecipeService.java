@@ -1,5 +1,7 @@
 package de.johannesbreitling.mealwhile.business.services;
 
+import de.johannesbreitling.mealwhile.business.model.exceptions.AccessNotAllowedException;
+import de.johannesbreitling.mealwhile.business.model.exceptions.EntityNotFoundException;
 import de.johannesbreitling.mealwhile.business.model.recipe.Ingredient;
 import de.johannesbreitling.mealwhile.business.model.recipe.Recipe;
 import de.johannesbreitling.mealwhile.business.model.requests.recipe.IngredientRequest;
@@ -30,11 +32,13 @@ public class RecipeService implements IRecipeService {
     }
 
     private UserGroup getUserGroupByUsername(String username) {
+        System.out.println("RETURN GROUP");
         return userService.getUserGroupByUsername(username);
     }
 
     private String getUsernameFromToken() {
         var token = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("RETURN TOKEN");
         return token.getName();
     }
 
@@ -81,6 +85,28 @@ public class RecipeService implements IRecipeService {
         recipeRepository.save(recipe);
 
         return recipe;
+    }
+
+    @Override
+    public Recipe deleteRecipe(String recipeId) {
+
+        // Get userGroup of user
+        var username = getUsernameFromToken();
+        var group = getUserGroupByUsername(username);
+
+        var recipe = recipeRepository.findById(recipeId);
+
+        if (recipe.isEmpty()) {
+            throw new EntityNotFoundException("Recipe with id " + recipeId);
+        }
+
+        if (!recipe.get().getAccessGroup().equals(group)) {
+            throw new AccessNotAllowedException("Recipe with id " + recipeId + " not known for group of the user");
+        }
+
+        recipeRepository.delete(recipe.get());
+
+        return recipe.get();
     }
 
 

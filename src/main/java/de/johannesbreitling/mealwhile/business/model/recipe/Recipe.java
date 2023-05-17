@@ -34,7 +34,8 @@ public class Recipe {
     @ManyToOne
     private UserGroup accessGroup;
 
-    @ElementCollection
+    // FetchType: Every time the recipe gets updated it also gets fetched
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<Ingredient> ingredients;
 
     public RecipeResponse toResponse() {
