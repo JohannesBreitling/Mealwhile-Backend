@@ -49,6 +49,28 @@ public class RecipeController {
                 ).toList();
     }
 
+    @PatchMapping("/{recipeId}")
+    public RecipeResponse updateRecipe(@PathVariable String recipeId,
+                                       @RequestBody RecipeRequest request) {
+        if (recipeId == null) {
+            throw new BadRequestException("Provide a id for the recipe you want to update");
+        }
+
+        if (request == null
+                || (
+                        request.getIngredients() == null
+                && request.getInfo() == null
+                && request.getDescription() == null
+                && request.getName() == null
+        )) {
+            throw new BadRequestException("Arguments to update recipe can not be null");
+        }
+
+        var recipe = recipeService.updateRecipe(recipeId, request);
+        return recipe.toResponse();
+    }
+
+
     @DeleteMapping("/{recipeId}")
     public RecipeResponse deleteRecipe(@PathVariable String recipeId) {
         if (recipeId == null) {

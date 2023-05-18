@@ -87,25 +87,61 @@ public class RecipeService implements IRecipeService {
         return recipe;
     }
 
+    public Recipe updateRecipe(String id, RecipeRequest request) {
+
+        var foundRecipe = recipeRepository.findById(id);
+
+        if (foundRecipe.isEmpty()) {
+            throw new EntityNotFoundException("Recipe with id " + id);
+        }
+        var recipe = foundRecipe.get();
+
+        var username = getUsernameFromToken();
+        var userGroup = getUserGroupByUsername(username);
+
+        if (!recipe.getAccessGroup().equals(userGroup)) {
+            throw new AccessNotAllowedException("Recipe with id " + id + " not known for group of the user");
+        }
+
+        if (request.getName() != null) {
+            recipe.setName(request.getName());
+        }
+
+        if (request.getInfo() != null) {
+            recipe.setInfo(request.getInfo());
+        }
+
+        if (request.getDescription() != null) {
+            recipe.setDescription(request.getDescription());
+        }
+
+        if (request.getIngredients() != null) {
+            var newIngredients = convertIngredientRequests(request.getIngredients());
+            recipe.setIngredients(newIngredients);
+        }
+
+        recipeRepository.save(recipe);
+        return recipe;
+    }
+
     @Override
-    public Recipe deleteRecipe(String recipeId) {
+    public Recipe deleteRecipe(String id) {
+
+        var recipe = recipeRepository.findById(id);
+
+        if (recipe.isEmpty()) {
+            throw new EntityNotFoundException("Recipe with id " + id);
+        }
 
         // Get userGroup of user
         var username = getUsernameFromToken();
         var group = getUserGroupByUsername(username);
 
-        var recipe = recipeRepository.findById(recipeId);
-
-        if (recipe.isEmpty()) {
-            throw new EntityNotFoundException("Recipe with id " + recipeId);
-        }
-
         if (!recipe.get().getAccessGroup().equals(group)) {
-            throw new AccessNotAllowedException("Recipe with id " + recipeId + " not known for group of the user");
+            throw new AccessNotAllowedException("Recipe with id " + id + " not known for group of the user");
         }
 
         recipeRepository.delete(recipe.get());
-
         return recipe.get();
     }
 

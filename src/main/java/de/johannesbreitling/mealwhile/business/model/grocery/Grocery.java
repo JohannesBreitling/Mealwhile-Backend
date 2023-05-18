@@ -45,6 +45,7 @@ public class Grocery {
         return GroceryResponse
                 .builder()
                 .id(id)
+                .name(name)
                 .defaultUnit(unit.toString())
                 .flags(convertedFlags)
                 .build();
