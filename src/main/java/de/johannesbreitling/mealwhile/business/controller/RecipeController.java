@@ -35,13 +35,9 @@ public class RecipeController {
         return ResponseEntity.ok(new SuccessfulQueryResponse("Recipe", recipe.getId(), QueryMode.CREATE));
     }
 
-    @GetMapping("/group/{groupId}")
-    public List<RecipeResponse> getRecipesByAccessGroup(@PathVariable String groupId) {
-        if (groupId == null) {
-            throw new BadRequestException("GroupId can not be null");
-        }
-
-        var recipes = recipeService.getAllRecipesByGroup(groupId);
+    @GetMapping("/group")
+    public List<RecipeResponse> getRecipesByAccessGroup() {
+        var recipes = recipeService.getRecipesByGroup();
         return recipes
                 .stream()
                 .map(

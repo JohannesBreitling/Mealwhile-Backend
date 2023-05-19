@@ -32,13 +32,11 @@ public class RecipeService implements IRecipeService {
     }
 
     private UserGroup getUserGroupByUsername(String username) {
-        System.out.println("RETURN GROUP");
         return userService.getUserGroupByUsername(username);
     }
 
     private String getUsernameFromToken() {
         var token = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println("RETURN TOKEN");
         return token.getName();
     }
 
@@ -55,8 +53,9 @@ public class RecipeService implements IRecipeService {
     }
 
     @Override
-    public List<Recipe> getAllRecipesByGroup(String groupId) {
-        var group = userService.getGroupById(groupId);
+    public List<Recipe> getRecipesByGroup() {
+        var username = getUsernameFromToken();
+        var group = getUserGroupByUsername(username);
 
         var recipes = recipeRepository.findRecipesByAccessGroup(group);
         if (recipes.isEmpty()) {
