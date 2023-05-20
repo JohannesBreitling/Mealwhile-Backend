@@ -10,6 +10,7 @@ import de.johannesbreitling.mealwhile.business.model.user.UserGroup;
 import de.johannesbreitling.mealwhile.business.repositories.UserRepository;
 import de.johannesbreitling.mealwhile.business.repositories.UserGroupRepository;
 import de.johannesbreitling.mealwhile.business.services.interfaces.IAdminService;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +28,19 @@ public class AdminService implements IAdminService {
         this.userGroupRepository = userGroupRepository;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+    }
+
+    public UserGroup getUserGroupFromToken() {
+        var token = SecurityContextHolder.getContext().getAuthentication();
+        var username = token.getName();
+
+        var user = userRepository.findUserByUsername(username);
+
+        if (user.isEmpty()) {
+            throw new EntityNotFoundException("User with username " + username);
+        }
+
+        return user.get().getGroup();
     }
 
     @Override

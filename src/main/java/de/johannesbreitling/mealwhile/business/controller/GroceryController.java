@@ -1,7 +1,6 @@
 package de.johannesbreitling.mealwhile.business.controller;
 
 import de.johannesbreitling.mealwhile.business.model.exceptions.BadRequestException;
-import de.johannesbreitling.mealwhile.business.model.grocery.Grocery;
 import de.johannesbreitling.mealwhile.business.model.requests.grocery.GroceryFlagRequest;
 import de.johannesbreitling.mealwhile.business.model.requests.grocery.GroceryRequest;
 import de.johannesbreitling.mealwhile.business.model.responses.grocery.GroceryResponse;

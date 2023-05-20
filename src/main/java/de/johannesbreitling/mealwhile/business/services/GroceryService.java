@@ -55,6 +55,16 @@ public class GroceryService implements IGroceryService {
     }
 
     @Override
+    public GroceryFlag getGroceryFlagById(String id) {
+        var flag = groceryFlagRepository.findFlagById(id);
+
+        if (flag.isEmpty()) {
+            throw new EntityNotFoundException("GroceryFlag with id" + id);
+        }
+        return flag.get();
+    }
+
+    @Override
     public List<GroceryFlag> getAllGroceryFlags() {
         return groceryFlagRepository.findAll();
     }
@@ -159,6 +169,7 @@ public class GroceryService implements IGroceryService {
         return grocery;
     }
 
+    @Override
     public Grocery deleteGrocery(String id) {
         var grocery = getGroceryFromRepository(id);
 

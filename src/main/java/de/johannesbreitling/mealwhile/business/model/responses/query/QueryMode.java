@@ -7,7 +7,10 @@ public enum QueryMode {
 
     CREATE,
     UPDATE,
-    DELETE
+    DELETE,
+
+    ADD,
+    REMOVE
 
 }
 

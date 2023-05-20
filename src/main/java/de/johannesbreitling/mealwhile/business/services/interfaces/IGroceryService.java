@@ -10,6 +10,7 @@ import java.util.List;
 public interface IGroceryService {
 
     // Methods regarding the grocery flags
+    GroceryFlag getGroceryFlagById(String id);
     List<GroceryFlag> getAllGroceryFlags();
     GroceryFlag createGroceryFlag(GroceryFlagRequest request);
     GroceryFlag updateGroceryFlag(String id, GroceryFlagRequest request);

@@ -1,5 +1,6 @@
 package de.johannesbreitling.mealwhile.business.model.events;
 
+import de.johannesbreitling.mealwhile.business.model.events.eventdate.EventDate;
 import de.johannesbreitling.mealwhile.business.model.recipe.Recipe;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.ManyToOne;

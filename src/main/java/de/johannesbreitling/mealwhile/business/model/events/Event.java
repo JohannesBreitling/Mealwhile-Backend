@@ -2,10 +2,8 @@ package de.johannesbreitling.mealwhile.business.model.events;
 
 
 import de.johannesbreitling.mealwhile.business.model.recipe.Ingredient;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import de.johannesbreitling.mealwhile.business.model.user.UserGroup;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +12,8 @@ import org.hibernate.annotations.GenericGenerator;
 
 import java.util.List;
 
-//@Entity
+@Entity
+@Table(name = "events")
 @Data
 @Builder
 @AllArgsConstructor
@@ -28,19 +27,30 @@ public class Event {
 
     private String name;
 
+    @ManyToOne
+    private UserGroup accessGroup;
+
     private String description;
 
-    private EventDate startDate;
+    private String startDate;
 
-    private EventDate endDate;
+    private String endDate;
 
     @ElementCollection
     private List<ScheduledMeal> meals;
 
-    @ElementCollection
+    @OneToMany
     private List<ParticipantProfile> profiles;
 
     @ElementCollection
     private List<Ingredient> storage;
+
+    public void addParticipantProfile(ParticipantProfile profile) {
+        profiles.add(profile);
+    }
+
+    public void removeParticipantProfile(ParticipantProfile profile) {
+        profiles.remove(profile);
+    }
 
 }

@@ -11,6 +11,9 @@ import java.util.List;
 @Component
 public interface IAdminService {
 
+    // Methods regarding the token
+    UserGroup getUserGroupFromToken();
+
     // Methods regarding the user groups
     List<UserGroup> getAllUserGroups();
     UserGroup getGroupById(String id);

@@ -1,17 +1,45 @@
 package de.johannesbreitling.mealwhile.business.model.events;
 
 import de.johannesbreitling.mealwhile.business.model.grocery.GroceryFlag;
-import jakarta.persistence.Embeddable;
-import jakarta.persistence.ManyToMany;
+import de.johannesbreitling.mealwhile.business.model.responses.event.ParticipantProfileResponse;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.util.List;
 
-@Embeddable
+@Entity
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Table(name = "participant_profiles")
+@Data
 public class ParticipantProfile {
 
+    @Id
+    @GenericGenerator(name = "profile_id", strategy = "de.johannesbreitling.mealwhile.business.model.generator.MealwhileIdGenerator")
+    @GeneratedValue(generator = "profile_id")
+    private String id;
+
     @ManyToMany
-    private List<GroceryFlag> allergies;
+    private List<GroceryFlag> flags;
 
     private int number;
+
+    // TODO Think about a way how you can handle people that eat significant more then average
+    //private int factor;
+
+    public ParticipantProfileResponse toResponse() {
+        var flagResponses = flags.stream().map(flag -> flag.toResponse()).toList();
+
+        return ParticipantProfileResponse
+                .builder()
+                .number(number)
+                .flags(flagResponses)
+                .build();
+    }
 
 }
