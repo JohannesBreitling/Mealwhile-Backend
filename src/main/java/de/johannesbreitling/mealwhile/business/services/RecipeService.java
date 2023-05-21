@@ -53,6 +53,24 @@ public class RecipeService implements IRecipeService {
     }
 
     @Override
+    public Recipe validateRecipeAccess(String recipeId) {
+        var foundRecipe = recipeRepository.findById(recipeId);
+
+        if (foundRecipe.isEmpty()) {
+            throw new EntityNotFoundException("Recipe with id " + recipeId);
+        }
+
+        var recipe = foundRecipe.get();
+        var userGroup = userService.getUserGroupFromToken();
+
+        if (!recipe.getAccessGroup().equals(userGroup)) {
+            throw new AccessNotAllowedException("Recipe with id " + recipeId + " not known for user group " + userGroup.getName());
+        }
+
+        return recipe;
+    }
+
+    @Override
     public List<Recipe> getRecipesByGroup() {
         var username = getUsernameFromToken();
         var group = getUserGroupByUsername(username);

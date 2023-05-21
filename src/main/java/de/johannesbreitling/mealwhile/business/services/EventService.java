@@ -17,6 +17,7 @@ import de.johannesbreitling.mealwhile.business.services.interfaces.IAdminService
 import de.johannesbreitling.mealwhile.business.services.interfaces.IEventService;
 import de.johannesbreitling.mealwhile.business.model.events.Event;
 import de.johannesbreitling.mealwhile.business.services.interfaces.IGroceryService;
+import de.johannesbreitling.mealwhile.business.services.interfaces.IRecipeService;
 import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ public class EventService implements IEventService {
 
     private final IAdminService userService;
     private final IGroceryService groceryService;
+    private final IRecipeService recipeService;
     private final EventRepository eventRepository;
     private final ParticipantProfileRepository participantProfileRepository;
 
@@ -34,11 +36,13 @@ public class EventService implements IEventService {
             AdminService userService,
             EventRepository eventRepository,
             GroceryService groceryService,
+            RecipeService recipeService,
             ParticipantProfileRepository participantProfileRepository
     ) {
         this.userService = userService;
         this.eventRepository = eventRepository;
         this.groceryService = groceryService;
+        this.recipeService = recipeService;
         this.participantProfileRepository = participantProfileRepository;
     }
 
@@ -129,8 +133,19 @@ public class EventService implements IEventService {
     @Override
     public ScheduledMeal addScheduledMeal(String eventId, ScheduledMealRequest request) {
         var event = validateEventAccess(eventId);
+        var recipe = recipeService.validateRecipeAccess(request.getRecipeId());
+        var date = new EventDate(request.getDate());
 
-        throw new NotYetImplementedException();
+        var meal = ScheduledMeal
+                .builder()
+                .meal(recipe)
+                .date(date)
+                .build();
+
+        event.addScheduledMeal(meal);
+        eventRepository.save(event);
+
+        return meal;
     }
 
     @Override

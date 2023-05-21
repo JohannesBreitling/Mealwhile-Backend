@@ -53,4 +53,12 @@ public class Event {
         profiles.remove(profile);
     }
 
+    public void addScheduledMeal(ScheduledMeal meal) {
+        meals.add(meal);
+    }
+
+    public void removeScheduledMeal(ScheduledMeal meal) {
+        meals.add(meal);
+    }
+
 }
