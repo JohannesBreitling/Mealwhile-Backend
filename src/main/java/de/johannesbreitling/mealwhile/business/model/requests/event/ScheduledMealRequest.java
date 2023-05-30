@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -13,6 +15,6 @@ public class ScheduledMealRequest {
 
     private final String date;
 
-    private final String recipeId;
+    private final List<LinkedRecipeRequest> recipes;
 
 }

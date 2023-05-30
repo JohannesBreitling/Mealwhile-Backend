@@ -1,5 +1,6 @@
 package de.johannesbreitling.mealwhile.business.services;
 
+import de.johannesbreitling.mealwhile.business.model.events.LinkedRecipe;
 import de.johannesbreitling.mealwhile.business.model.events.ParticipantProfile;
 import de.johannesbreitling.mealwhile.business.model.events.ScheduledMeal;
 import de.johannesbreitling.mealwhile.business.model.events.eventdate.EventDate;
@@ -9,10 +10,12 @@ import de.johannesbreitling.mealwhile.business.model.exceptions.BadRequestExcept
 import de.johannesbreitling.mealwhile.business.model.exceptions.EntityNotFoundException;
 import de.johannesbreitling.mealwhile.business.model.grocery.GroceryFlag;
 import de.johannesbreitling.mealwhile.business.model.requests.event.EventRequest;
+import de.johannesbreitling.mealwhile.business.model.requests.event.LinkedRecipeRequest;
 import de.johannesbreitling.mealwhile.business.model.requests.event.ParticipantProfileRequest;
 import de.johannesbreitling.mealwhile.business.model.requests.event.ScheduledMealRequest;
 import de.johannesbreitling.mealwhile.business.repositories.EventRepository;
 import de.johannesbreitling.mealwhile.business.repositories.ParticipantProfileRepository;
+import de.johannesbreitling.mealwhile.business.repositories.ScheduledMealRepository;
 import de.johannesbreitling.mealwhile.business.services.interfaces.IAdminService;
 import de.johannesbreitling.mealwhile.business.services.interfaces.IEventService;
 import de.johannesbreitling.mealwhile.business.model.events.Event;
@@ -31,19 +34,21 @@ public class EventService implements IEventService {
     private final IRecipeService recipeService;
     private final EventRepository eventRepository;
     private final ParticipantProfileRepository participantProfileRepository;
+    private final ScheduledMealRepository scheduledMealRepository;
 
     public EventService(
             AdminService userService,
             EventRepository eventRepository,
             GroceryService groceryService,
             RecipeService recipeService,
-            ParticipantProfileRepository participantProfileRepository
-    ) {
+            ParticipantProfileRepository participantProfileRepository,
+            ScheduledMealRepository scheduledMealRepository) {
         this.userService = userService;
         this.eventRepository = eventRepository;
         this.groceryService = groceryService;
         this.recipeService = recipeService;
         this.participantProfileRepository = participantProfileRepository;
+        this.scheduledMealRepository = scheduledMealRepository;
     }
 
     private Event validateEventAccess(String eventId) {
@@ -61,7 +66,23 @@ public class EventService implements IEventService {
         return event.get();
     }
 
-    private ParticipantProfile convertRequestToParticipantProfile(ParticipantProfileRequest request) {
+    private ParticipantProfile validateUserProfileAccess(String profileId, Event event) {
+        var foundProfile = participantProfileRepository.findParticipantProfileById(profileId);
+
+        if (foundProfile.isEmpty()) {
+            throw new EntityNotFoundException("ParticipantProfile with id " + profileId);
+        }
+
+        var profile = foundProfile.get();
+
+        if (!event.getId().equals(profile.getEvent().getId())) {
+            throw new AccessNotAllowedException("ParticipantProfile with id " + profileId + " is not known for event with id " + event.getId());
+        }
+
+        return profile;
+    }
+
+    private ParticipantProfile convertRequestToParticipantProfile(Event event, ParticipantProfileRequest request) {
         List<GroceryFlag> flags = new ArrayList<>();
 
         for (String flagId : request.getFlags()) {
@@ -71,6 +92,7 @@ public class EventService implements IEventService {
 
         return ParticipantProfile
                 .builder()
+                .event(event)
                 .flags(flags)
                 .number(request.getNumber())
                 .build();
@@ -104,7 +126,7 @@ public class EventService implements IEventService {
     @Override
     public ParticipantProfile addParticipantProfile(String eventId, ParticipantProfileRequest request) {
         var event = validateEventAccess(eventId);
-        var newProfile = convertRequestToParticipantProfile(request);
+        var newProfile = convertRequestToParticipantProfile(event, request);
         participantProfileRepository.save(newProfile);
         event.addParticipantProfile(newProfile);
         eventRepository.save(event);
@@ -133,15 +155,26 @@ public class EventService implements IEventService {
     @Override
     public ScheduledMeal addScheduledMeal(String eventId, ScheduledMealRequest request) {
         var event = validateEventAccess(eventId);
-        var recipe = recipeService.validateRecipeAccess(request.getRecipeId());
         var date = new EventDate(request.getDate());
+
+        List<LinkedRecipe> linkedRecipes = new ArrayList<>();
+
+        for (LinkedRecipeRequest recipeRequest : request.getRecipes()) {
+            // VALIDATE USER PROFILE
+            var userProfile = validateUserProfileAccess(recipeRequest.getProfileId(), event);
+            var recipe = recipeService.validateRecipeAccess(recipeRequest.getRecipeId());
+
+            var linkedRecipe = new LinkedRecipe(recipe, userProfile);
+            linkedRecipes.add(linkedRecipe);
+        }
 
         var meal = ScheduledMeal
                 .builder()
-                .meal(recipe)
+                .meals(linkedRecipes)
                 .date(date)
                 .build();
 
+        scheduledMealRepository.save(meal);
         event.addScheduledMeal(meal);
         eventRepository.save(event);
 

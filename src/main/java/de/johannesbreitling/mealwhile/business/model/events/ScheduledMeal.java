@@ -2,17 +2,16 @@ package de.johannesbreitling.mealwhile.business.model.events;
 
 import de.johannesbreitling.mealwhile.business.model.events.eventdate.EventDate;
 import de.johannesbreitling.mealwhile.business.model.recipe.Recipe;
-import jakarta.persistence.Embeddable;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
-@Embeddable
+import java.util.List;
+
+@Entity
 @Data
 @Builder
 @AllArgsConstructor
@@ -26,7 +25,7 @@ public class ScheduledMeal {
 
     private EventDate date;
 
-    @ManyToOne
-    private Recipe meal;
+    @ElementCollection
+    private List<LinkedRecipe> meals;
 
 }

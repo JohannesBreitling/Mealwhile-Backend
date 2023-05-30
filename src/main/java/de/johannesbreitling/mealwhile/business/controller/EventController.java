@@ -4,6 +4,7 @@ package de.johannesbreitling.mealwhile.business.controller;
 import de.johannesbreitling.mealwhile.business.model.exceptions.BadRequestException;
 import de.johannesbreitling.mealwhile.business.model.requests.event.EventRequest;
 import de.johannesbreitling.mealwhile.business.model.requests.event.ParticipantProfileRequest;
+import de.johannesbreitling.mealwhile.business.model.requests.event.ScheduledMealRequest;
 import de.johannesbreitling.mealwhile.business.model.responses.query.QueryMode;
 import de.johannesbreitling.mealwhile.business.model.responses.query.SuccessfulQueryResponse;
 import de.johannesbreitling.mealwhile.business.services.EventService;
@@ -69,6 +70,29 @@ public class EventController {
 
         var profile = eventService.removeParticipantProfile(eventId, profileId);
         return ResponseEntity.ok(new SuccessfulQueryResponse("ParticipantProfile", "Event", profileId, eventId, QueryMode.REMOVE));
+    }
+
+    @PostMapping("/{eventId}/meals")
+    public ResponseEntity<SuccessfulQueryResponse> addScheduledMeal(
+            @PathVariable String eventId,
+            @RequestBody ScheduledMealRequest request
+    ) {
+        if (eventId == null) {
+            throw new BadRequestException("Provide a id for the event you want to add a meal to");
+        }
+
+        if (
+                request == null
+                || request.getRecipes() == null
+                || request.getRecipes().size() == 0
+                || request.getName() == null
+                || request.getDate() == null
+        ) {
+            throw new BadRequestException("Provide valid arguments for adding a meal");
+        }
+
+        var meal = eventService.addScheduledMeal(eventId, request);
+        return ResponseEntity.ok(new SuccessfulQueryResponse("ScheduledMeal", "Event", "X", eventId, QueryMode.ADD));
     }
 
 

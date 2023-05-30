@@ -24,13 +24,15 @@ public class ParticipantProfile {
     @GeneratedValue(generator = "profile_id")
     private String id;
 
+    @ManyToOne
+    private Event event;
+
     @ManyToMany
     private List<GroceryFlag> flags;
 
     private int number;
 
-    // TODO Think about a way how you can handle people that eat significant more then average
-    //private int factor;
+    private int factor;
 
     public ParticipantProfileResponse toResponse() {
         var flagResponses = flags.stream().map(flag -> flag.toResponse()).toList();
