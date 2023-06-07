@@ -14,6 +14,8 @@ public interface IAdminService {
     // Methods regarding the token
     UserGroup getUserGroupFromToken();
 
+    boolean checkUsername(String username);
+
     // Methods regarding the user groups
     List<UserGroup> getAllUserGroups();
     UserGroup getGroupById(String id);

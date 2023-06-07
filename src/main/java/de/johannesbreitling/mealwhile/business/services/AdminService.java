@@ -30,6 +30,7 @@ public class AdminService implements IAdminService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    @Override
     public UserGroup getUserGroupFromToken() {
         var token = SecurityContextHolder.getContext().getAuthentication();
         var username = token.getName();
@@ -41,6 +42,13 @@ public class AdminService implements IAdminService {
         }
 
         return user.get().getGroup();
+    }
+
+    @Override
+    public boolean checkUsername(String username) {
+        var user = userRepository.findUserByUsername(username);
+
+        return user.isEmpty();
     }
 
     @Override
